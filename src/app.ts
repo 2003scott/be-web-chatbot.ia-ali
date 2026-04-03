@@ -12,7 +12,7 @@ app.use(cors({
 }))
 
 app.get('/', (_req: Request, res: Response) => {
-    res.send('Chatbot ALI - is running')
+    res.json({ message: 'Chatbot ALI is running!' })
 })
 
 
