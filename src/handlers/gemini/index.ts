@@ -10,15 +10,22 @@ export const geminiMessage= async (req: Request, res: Response) => {
     });
   }
 
-  res.setHeader("Content-Type", "text/plain; charset=utf-8");
-  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
+  res.setHeader("Cache-Control", "no-cache, no-transform");
   res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders();
 
   try {
     await GeminiService(contents, (text) => {
-      res.write(text);
+      if (!text) {
+        return;
+      }
+
+      res.write(`data: ${JSON.stringify({ text })}\n\n`);
     });
 
+    res.write("event: done\ndata: {}\n\n");
     res.end();
   } catch (error) {
     console.error("Gemini endpoint error:", error);

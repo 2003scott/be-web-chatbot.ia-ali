@@ -16,7 +16,7 @@ app.get('/', (_req: Request, res: Response) => {
     res.json({ message: 'Chatbot ALI is running!' })
 })
 
-app.post("/api/gemini", gemini);
+app.use("/api", gemini);
 
 
 export default app
