@@ -25,7 +25,6 @@ export const geminiMessage= async (req: Request, res: Response) => {
       res.write(`data: ${JSON.stringify({ text })}\n\n`);
     });
 
-    res.write("event: done\ndata: {}\n\n");
     res.end();
   } catch (error) {
     console.error("Gemini endpoint error:", error);
