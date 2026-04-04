@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import morgan from 'morgan'
 import cors from 'cors'
+import gemini from "./handlers/gemini/route";
 
 const app = express()
 
@@ -14,6 +15,8 @@ app.use(cors({
 app.get('/', (_req: Request, res: Response) => {
     res.json({ message: 'Chatbot ALI is running!' })
 })
+
+app.post("/api/gemini", gemini);
 
 
 export default app

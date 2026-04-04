@@ -1,14 +1,21 @@
 import { GoogleGenAI } from "@google/genai";
 
-const apiKey = process.env.GEMINI_API_KEY;
+const getGeminiClient = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
 
-if (!apiKey) {
-  throw new Error("Missing GEMINI_API_KEY environment variable.");
-}
+  if (!apiKey) {
+    throw new Error("Missing GEMINI_API_KEY environment variable.");
+  }
 
-const ai = new GoogleGenAI({ apiKey });
+  return new GoogleGenAI({ apiKey });
+};
 
-export const GeminiService = async (contents: string) => {
+export const GeminiService = async (
+  contents: string,
+  onStream: (text: string) => void
+) => {
+  const ai = getGeminiClient();
+
   const response = await ai.models.generateContentStream({
     model: "gemini-2.5-flash",
     contents: contents,
@@ -18,11 +25,7 @@ export const GeminiService = async (contents: string) => {
     },
   });
 
-  let text = "";
-
   for await (const chunk of response) {
-    text += chunk.text ?? "";
+    onStream(chunk.text ?? "");
   }
-
-  return text;
 };
