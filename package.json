@@ -16,7 +16,8 @@
   "dependencies": {
     "@google/genai": "^1.48.0",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "openid-client": "^6.8.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
