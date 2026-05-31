@@ -1,9 +1,4 @@
 import crypto from "node:crypto";
-import {
-  randomPKCECodeVerifier,
-  randomState,
-  calculatePKCECodeChallenge,
-} from "openid-client";
 import { env } from "../../config";
 
 export type AuthUser = {
@@ -25,6 +20,9 @@ const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
 const base64UrlEncode = (value: string) =>
   Buffer.from(value, "utf8").toString("base64url");
+
+const base64UrlEncodeBytes = (value: Buffer) =>
+  value.toString("base64url");
 
 const base64UrlDecode = (value: string) =>
   Buffer.from(value, "base64url").toString("utf8");
@@ -227,6 +225,13 @@ export const getGoogleProfile = async (
 };
 
 export const createOAuthState = () => randomState();
+
+const randomState = () => base64UrlEncodeBytes(crypto.randomBytes(16));
+
+const randomPKCECodeVerifier = () => base64UrlEncodeBytes(crypto.randomBytes(32));
+
+const calculatePKCECodeChallenge = async (verifier: string) =>
+  base64UrlEncodeBytes(crypto.createHash("sha256").update(verifier).digest());
 
 export const createCodeVerifier = () => randomPKCECodeVerifier();
 
