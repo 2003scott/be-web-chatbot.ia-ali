@@ -15,7 +15,7 @@ app.use(cors({
 }))
 
 app.get('/', (_req: Request, res: Response) => {
-    res.json({ message: 'Chatbot ALI is running!' })
+    res.json({ message: 'Chatbot ALI for Gemini is running!' })
 })
 
 app.use("/api/auth", auth);
