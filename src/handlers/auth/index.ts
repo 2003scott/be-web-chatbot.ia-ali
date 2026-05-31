@@ -94,6 +94,7 @@ export const googleCallback = async (req: Request, res: Response) => {
       picture: googleProfile.picture,
     };
     const sessionToken = buildSessionToken(user);
+    const sessionSameSite = isSecureCookie() ? "None" : "Lax";
 
     res.setHeader(
       "Set-Cookie",
@@ -102,7 +103,7 @@ export const googleCallback = async (req: Request, res: Response) => {
           httpOnly: true,
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
-          sameSite: "None",
+          sameSite: sessionSameSite,
           secure: isSecureCookie(),
         }),
         buildCookie(OAUTH_STATE_COOKIE, "", {
@@ -147,13 +148,14 @@ export const me = async (req: Request, res: Response) => {
 };
 
 export const logout = async (_req: Request, res: Response) => {
+  const sessionSameSite = isSecureCookie() ? "None" : "Lax";
   res.setHeader(
     "Set-Cookie",
     buildCookie(SESSION_COOKIE, "", {
       httpOnly: true,
       maxAge: 0,
       path: "/",
-      sameSite: "None",
+      sameSite: sessionSameSite,
       secure: isSecureCookie(),
     })
   );
