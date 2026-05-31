@@ -3,13 +3,15 @@ import morgan from 'morgan'
 import cors from 'cors'
 import gemini from "./handlers/gemini/route";
 import auth from "./handlers/auth/route";
+import { env } from "./config";
 
 const app = express()
 
 app.use(express.json())
 app.use(morgan('dev'))
 app.use(cors({
-  origin: "*",
+    credentials: true,
+    origin: env.FRONTEND_URL
 }))
 
 app.get('/', (_req: Request, res: Response) => {
