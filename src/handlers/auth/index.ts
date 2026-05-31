@@ -102,7 +102,7 @@ export const googleCallback = async (req: Request, res: Response) => {
           httpOnly: true,
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
-          sameSite: "Lax",
+          sameSite: "None",
           secure: isSecureCookie(),
         }),
         buildCookie(OAUTH_STATE_COOKIE, "", {
@@ -153,7 +153,7 @@ export const logout = async (_req: Request, res: Response) => {
       httpOnly: true,
       maxAge: 0,
       path: "/",
-      sameSite: "Lax",
+      sameSite: "None",
       secure: isSecureCookie(),
     })
   );
