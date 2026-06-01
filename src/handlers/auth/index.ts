@@ -94,36 +94,29 @@ export const googleCallback = async (req: Request, res: Response) => {
       picture: googleProfile.picture,
     };
     const sessionToken = buildSessionToken(user);
-    const sessionSameSite = isSecureCookie() ? "None" : "Lax";
 
-    res.setHeader(
-      "Set-Cookie",
-      [
-        buildCookie(SESSION_COOKIE, sessionToken, {
-          httpOnly: true,
-          maxAge: 60 * 60 * 24 * 7,
-          path: "/",
-          sameSite: sessionSameSite,
-          secure: isSecureCookie(),
-        }),
-        buildCookie(OAUTH_STATE_COOKIE, "", {
-          httpOnly: true,
-          maxAge: 0,
-          path: "/api/auth/google/callback",
-          sameSite: "Lax",
-          secure: isSecureCookie(),
-        }),
-        buildCookie(OAUTH_VERIFIER_COOKIE, "", {
-          httpOnly: true,
-          maxAge: 0,
-          path: "/api/auth/google/callback",
-          sameSite: "Lax",
-          secure: isSecureCookie(),
-        }),
-      ]
-    );
+    res.setHeader("Set-Cookie", [
+      buildCookie(OAUTH_STATE_COOKIE, "", {
+        httpOnly: true,
+        maxAge: 0,
+        path: "/api/auth/google/callback",
+        sameSite: "Lax",
+        secure: isSecureCookie(),
+      }),
+      buildCookie(OAUTH_VERIFIER_COOKIE, "", {
+        httpOnly: true,
+        maxAge: 0,
+        path: "/api/auth/google/callback",
+        sameSite: "Lax",
+        secure: isSecureCookie(),
+      }),
+    ]);
 
-    return res.redirect(env.FRONTEND_URL);
+    const redirectUrl = new URL(env.FRONTEND_URL);
+    redirectUrl.pathname = "/auth/callback";
+    redirectUrl.hash = `token=${encodeURIComponent(sessionToken)}`;
+
+    return res.redirect(redirectUrl.toString());
   } catch (error) {
     console.error("Google OAuth callback failed", error);
 
@@ -137,8 +130,12 @@ export const googleCallback = async (req: Request, res: Response) => {
 };
 
 export const me = async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  const bearerToken = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice("Bearer ".length).trim()
+    : undefined;
   const cookies = parseCookieHeader(req.headers.cookie);
-  const user = verifySessionToken(cookies[SESSION_COOKIE]);
+  const user = verifySessionToken(bearerToken ?? cookies[SESSION_COOKIE]);
 
   if (!user) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -148,17 +145,5 @@ export const me = async (req: Request, res: Response) => {
 };
 
 export const logout = async (_req: Request, res: Response) => {
-  const sessionSameSite = isSecureCookie() ? "None" : "Lax";
-  res.setHeader(
-    "Set-Cookie",
-    buildCookie(SESSION_COOKIE, "", {
-      httpOnly: true,
-      maxAge: 0,
-      path: "/",
-      sameSite: sessionSameSite,
-      secure: isSecureCookie(),
-    })
-  );
-
-  return res.json({ message: "Logged out" });
+  return res.status(204).send();
 };
