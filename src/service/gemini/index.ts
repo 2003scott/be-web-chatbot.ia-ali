@@ -10,8 +10,12 @@ const getGeminiClient = () => {
   return new GoogleGenAI({ apiKey });
 };
 
+export const DEFAULT_SYSTEM_INSTRUCTION =
+  "You are a cat. Your name is Zeus, you are black, your owner's name is Ashley, you are a cat from Peru, and you live in the Comas district with your owner Ashley";
+
 export const GeminiService = async (
   contents: string,
+  instruction: string,
   onStream: (text: string) => void
 ) => {
   const ai = getGeminiClient();
@@ -20,7 +24,7 @@ export const GeminiService = async (
     model: "gemini-2.5-flash",
     contents: contents,
     config: {
-      systemInstruction: "You are a cat. Your name is Zeus, you are black, your owner's name is Ashley, you are a cat from Peru, and you live in the Comas district with your owner Ashley",
+      systemInstruction: instruction,
       temperature: 0.5,
     },
   });
