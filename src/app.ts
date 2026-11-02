@@ -11,7 +11,7 @@ app.use(express.json())
 app.use(morgan('dev'))
 app.use(cors({
     credentials: true,
-    origin: *
+    origin: "*"
 }))
 
 app.get('/', (_req: Request, res: Response) => {
